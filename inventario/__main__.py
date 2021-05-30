@@ -1,6 +1,8 @@
 from .inventario_funciones import registrar_productos, registrar_productos, buscar_productos, cambiar_estado_producto,realizar_venta,\
     ventas_rango_fecha, top_5_mas_vendidos, top_5_menos_vendidos, mostrar_datos_producto, mostrar_datos_venta, mostrar_datos_venta_producto
 import datetime
+import os
+import pickle
 #import inventario_funciones
 
 
@@ -108,14 +110,69 @@ def continuar():
     print()
 
 
+def cargar_inventario():
+    while True:
+        print('Desea cargar los datos del inventario y ventas desde el archivo?')
+        print('1.- Si')
+        print('2.- No')
+
+        opcion = capturar_entero('Digite la opcion')
+
+        if opcion == 1 or opcion == 2:
+            break
+    
+    if opcion == 1:
+        with open('inventario/inventario.pickle', 'rb') as f:
+            inventario = pickle.load(f)
+
+            return inventario
+
+    return None
+
+
+def guardar_datos(productos, ventas):
+    while True:
+        print('Desea guardar los datos de productos y ventas desde el archivo?')
+        print('1.- Si')
+        print('2.- No')
+
+        opcion = capturar_entero('Digite la opcion')
+
+        if opcion == 1 or opcion == 2:
+            break
+
+    if opcion == 1:
+
+        with open('inventario/inventario.pickle', 'wb') as f:
+            inventario = {'productos':productos,'ventas':ventas}
+
+            pickle.dump(inventario, f)
+
+        return True
+    else:
+        False
+
+
+
 def main():
     """
     Punto de entrada a la aplicación.
     """
 
-    productos = []
+    if os.path.isfile('inventario/inventario.pickle'):
+        inventario = cargar_inventario()
 
-    ventas = []
+        if inventario:
+            productos = inventario['productos']
+            ventas = inventario['ventas']
+        else:
+            productos = []
+            ventas = []
+
+    else:
+        productos = []
+        ventas = []
+
 
     while True:
         while True:
@@ -388,6 +445,14 @@ def main():
         continuar()
 
     print()
+
+    if len(productos):
+        if guardar_datos(productos, ventas):
+            print('Los datos del inventario (productos y ventas) se han guardado en disco.')
+        else:
+            print('Ha omitido almacenar los datos en disco')
+    print()
+
     print('El programa a finalizado.')
 
 
